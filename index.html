@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dorkguess</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 24px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(45deg, #f7971e, #ffd200);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .input-group {
+            margin: 20px 0;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #ddd;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s;
+            background: #f8f9fa;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 0.5px;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #f7971e;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(247, 151, 30, 0.1);
+        }
+
+        .input-group input.valid {
+            border-color: #28a745;
+            background: #f0fff0;
+        }
+
+        .input-group input.invalid {
+            border-color: #dc3545;
+            background: #fff0f0;
+        }
+
+        .address-helper {
+            font-size: 12px;
+            margin-top: 8px;
+            color: #666;
+            min-height: 20px;
+        }
+
+        .address-helper.valid {
+            color: #28a745;
+        }
+
+        .address-helper.invalid {
+            color: #dc3545;
+        }
+
+        .address-length {
+            font-size: 11px;
+            color: #999;
+            margin-top: 4px;
+        }
+
+        .chest-box {
+            margin: 30px 0;
+            cursor: pointer;
+            transition: transform 0.3s;
+            position: relative;
+        }
+
+        .chest-box:hover {
+            transform: scale(1.02);
+        }
+
+        .chest-box img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 16px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .chest-box .chest-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 60px;
+            opacity: 0;
+            transition: opacity 0.5s;
+            pointer-events: none;
+        }
+
+        .chest-box.opened .chest-overlay {
+            opacity: 1;
+        }
+
+        .btn-open {
+            background: linear-gradient(45deg, #f7971e, #ffd200);
+            border: none;
+            padding: 16px 48px;
+            font-size: 20px;
+            font-weight: 700;
+            border-radius: 50px;
+            color: #1a1a2e;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+			margin-bottom: 15px;
+
+        }
+
+        .btn-open:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(247, 151, 30, 0.4);
+        }
+
+        .btn-open:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .prize-display {
+            margin: 25px 0;
+            padding: 20px;
+            border-radius: 16px;
+            background: #f8f9fa;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: all 0.5s;
+        }
+
+        .prize-display.win {
+            background: #d4edda;
+            border: 2px solid #28a745;
+        }
+
+        .prize-display.lose {
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+        }
+
+        .prize-display .prize-emoji {
+            font-size: 40px;
+            margin-right: 15px;
+        }
+
+        .prize-display .prize-amount {
+            font-size: 28px;
+            font-weight: 700;
+            color: #28a745;
+        }
+
+        .status-text {
+            margin-top: 15px;
+            font-size: 13px;
+            font-weight: 600;
+            word-break: break-all;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .status-text.success {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .status-text.error {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .status-text.info {
+            background: #e3f2fd;
+            color: #0d47a1;
+        }
+
+        .status-text.warning {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .rules {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            text-align: left;
+        }
+
+        .rules h3 {
+            color: #333;
+            margin-bottom: 12px;
+        }
+
+  
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            padding: 15px;
+            background: #e8f5e9;
+            border-radius: 12px;
+            font-size: 14px;
+        }
+
+        .stats div {
+            text-align: center;
+        }
+
+        .stats .number {
+            font-size: 22px;
+            font-weight: 700;
+            color: #2e7d32;
+        }
+
+        .free-badge {
+            display: inline-block;
+            background: #4CAF50;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+		.mini-chart {
+			margin: 15px 0;
+			padding: 8px;
+			background: #f8f9fa;
+			border-radius: 12px;
+			height: 70px;
+		}
+		.mini-chart svg {
+			width: 100%;
+			height: 100%;
+			display: block;
+		}
+		.mini-chart path.line {
+			fill: none;
+			stroke: #f7971e;
+			stroke-width: 2;
+			stroke-linejoin: round;
+			stroke-linecap: round;
+		}
+		.mini-chart path.area {
+			fill: url(#areaGradient);
+			opacity: 0.25;
+		}
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+            }
+            h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Dorkguess BTC price</h1>
+        <p class="subtitle">Make a correct BTC price change prediction in 1 minute and increase your score! Score 5 points and 10 DORK will be sent to your wallet address!</p>
+        
+        <div class="free-badge">The next BTC move ?</div>
+
+        <!-- Wallet Input -->
+        <div class="input-group">
+            <label>💰 Your Wallet Address</label>
+                <div class="walletnumber" id="userwalletnumber">0</div>
+
+         </div>
+
+        <!-- Stats -->
+        <div class="stats" id="stats">
+            <div>
+                <div class="number" id="BtcPrice">0</div>
+                <div>BTC price</div>
+            </div>
+            <div>
+                <div class="number" id="livesLeft">0</div>
+                <div>Lives Left</div>
+            </div>
+            <div>
+                <div class="number" id="score">0</div>
+                <div>Your Score</div>
+            </div> 			
+        </div>
+
+		<!-- Mini chart -->
+		<div class="mini-chart">
+			<svg id="priceChart" viewBox="0 0 300 60" preserveAspectRatio="none">
+				<defs>
+					<linearGradient id="areaGradient" x1="0" x2="0" y1="0" y2="1">
+						<stop offset="0%" stop-color="#f7971e" stop-opacity="0.6"/>
+						<stop offset="100%" stop-color="#f7971e" stop-opacity="0"/>
+					</linearGradient>
+				</defs>
+			</svg>		
+		</div>
+		
+
+
+        <!-- Open Button -->
+        <button class="btn-open" id="upBtn" onclick="UpVote()">UP</button>
+		<button class="btn-open" id="openBtn" onclick="DownVote()">DOWN</button>
+       
+		<!-- Prize Display -->
+        <div class="prize-display" id="prizeDisplay">
+            🎯 Predict BTC price in the next minute
+        </div>
+		
+		<!-- Reward Info -->
+		<div class="status-text info" id="rewardInfo">
+			🎁 Loading reward info...
+		</div>
+
+        <!-- Status -->
+        <div class="status-text info" id="status">
+            👤 Waiting ...
+        </div>
+
+        <!-- Rules -->
+        <div class="rules">
+            <h3>🎯 Rules</h3>
+ 
+            <p style="margin-top: 12px; font-size: 13px; color: #666; text-align: center;">
+                • 10 Lives per day • Lives reset at 12:00 UTC • Register with your DORK wallet and a password and click sign up. • Lock duration is 1 minute • BTC price updates every minute • Entry price recorded when up or down button is pressed  • Free to play!
+            </p>
+        </div>
+            
+        <!-- banner -->
+        <div class="chest-box" id="adBox">
+			<iframe src="https://zerads.com/ad/ad.php?width=300&ref=blabla" marginwidth="0" marginheight="0" width="300" height="250" scrolling="no" border="0" frameborder="0"></iframe>        
+		</div>
+            
+    </div>
+
+	<script>
+		const API_URL = 'http://YOUR_IP:5502';
+		
+		const username = localStorage.getItem('dork_user');
+		const token = localStorage.getItem('dork_token');
+		if (!username || !token) {
+			window.location.href = 'login.html';
+		}
+		
+		const headers = {
+			'Content-Type': 'application/json',
+			'x-username': username,
+			'x-auth-token': token
+		};
+		
+		document.getElementById('userwalletnumber').textContent = username;
+		
+		// ===== stats =====		
+		let locked = false;
+		let secondsRemaining = 0;   // last value from server
+		let lastSyncAt = 0;         // when we last got it from server
+		let lives = 0;  
+		
+		async function loadStats() {
+
+			try {
+				const r = await fetch(`${API_URL}/api/stats`, { headers });
+				const data = await r.json();
+				if (data.error) { console.error(data.error); return; }
+		
+				if (data.btcPrice) {
+					document.getElementById('BtcPrice').textContent = '$' + Number(data.btcPrice).toFixed(2);
+				}				
+				document.getElementById('livesLeft').textContent = data.lives;
+				lives = data.lives;
+				document.getElementById('score').textContent = data.score;
+		
+				locked = data.locked;
+				secondsRemaining = data.secondsRemaining || 0;
+				lastSyncAt = Date.now();      // remember when we got this number
+		
+				updateButtons();
+		
+				if (data.lastResult && !data.pendingPrediction) {
+					const p = document.getElementById('prizeDisplay');
+					const emoji = data.lastResult.correct ? '🎉' : '😢';
+					p.textContent = `${emoji} ${data.lastResult.direction} @ $${data.lastResult.entryPrice} → exit $${data.lastResult.exitPrice} (${data.lastResult.correct ? '+1' : '-1'})`;
+					p.className = 'prize-display ' + (data.lastResult.correct ? 'win' : 'lose');
+				}
+				
+				// ===== Last reward info =====
+				const ri = document.getElementById('rewardInfo');
+				if (data.lastReward && data.lastReward.txid) {
+					const txid = data.lastReward.txid; 
+					const when = new Date(data.lastReward.at).toUTCString();
+					const short = txid.slice(0, 4) + '…' + txid.slice(-4);
+					ri.textContent = `🎁 Last rewarded: ${when} | tx: ${short}`;
+					ri.title = txid;
+					ri.className = 'status-text success';
+				} else {
+					ri.textContent = '🎁 You have not received any reward yet.';
+					ri.title = '';
+					ri.className = 'status-text info';
+				}
+				
+				//  if a prediction is currently pending, restore the "locked" display
+				if (data.pendingPrediction && data.locked) {
+					const p = document.getElementById('prizeDisplay');
+					p.textContent = `🎯 ${data.pendingPrediction.direction} locked @ $${Number(data.pendingPrediction.entryPrice).toFixed(2)} - waiting for result...`;
+					p.className = 'prize-display';
+				}
+					if (data.priceHistory) drawChart(data.priceHistory);			
+			} catch (e) {
+				console.error('stats load failed', e);
+			}
+		}
+		
+		function updateButtons() {
+			const upBtn = document.getElementById('upBtn');
+			const downBtn = document.getElementById('openBtn');
+		
+			const elapsedSinceSync = Math.floor((Date.now() - lastSyncAt) / 1000);
+			const secsLeft = Math.max(0, secondsRemaining - elapsedSinceSync);
+		
+			if (locked && secsLeft > 0) {
+				upBtn.disabled = true;
+				downBtn.disabled = true;
+				document.getElementById('status').textContent = `⏳ Locked for ${secsLeft}s`;
+				document.getElementById('status').className = 'status-text warning';
+			} else {
+				if (locked) {
+					// Lock just expired locally — ask the server for the result now
+					locked = false;      // prevent double-trigger
+					refreshNow();        // fetches resolved result and reschedules
+				}
+			
+				if (lives <= 0) {
+					// No lives left — keep buttons disabled and show the message
+					upBtn.disabled = true;
+					downBtn.disabled = true;
+					document.getElementById('status').textContent = '❌ No lives left today. Come back after 12:00 UTC.';
+					document.getElementById('status').className = 'status-text error';
+				} else {
+					upBtn.disabled = false;
+					downBtn.disabled = false;
+					document.getElementById('status').textContent = '✅ Ready to predict!';
+					document.getElementById('status').className = 'status-text success';
+				}
+			}
+		}
+		
+		// ===== UP / DOWN =====
+		async function placePrediction(direction) {
+			try {
+				const r = await fetch(`${API_URL}/api/predict`, {
+					method: 'POST',
+					headers,
+					body: JSON.stringify({ direction })
+				});
+				const data = await r.json();
+				if (!data.success) {
+					document.getElementById('status').textContent = '❌ ' + data.error;
+					document.getElementById('status').className = 'status-text error';
+					return;
+				}
+		
+				document.getElementById('prizeDisplay').textContent =
+					`🎯 ${direction} locked @ $${data.entryPrice.toFixed(2)} - wait 1 minute`;
+				document.getElementById('prizeDisplay').className = 'prize-display';
+		
+				await refreshNow();   // sets locked=true, immediately switches to 5s polling
+			} catch (e) {
+				console.error(e);
+			}
+		}
+		
+		function UpVote()   { placePrediction('UP'); }
+		function DownVote() { placePrediction('DOWN'); }
+
+// ===== minichart functions =====
+async function loadPriceHistory() {
+    try {
+        const r = await fetch(`${API_URL}/api/price-history`);
+        const { points } = await r.json();
+        drawChart(points);
+    } catch (e) {
+        console.error('history load failed', e);
+    }
+}
+
+function drawChart(points) {
+    const svg = document.getElementById('priceChart');
+	if (!points || points.length < 2) {
+		svg.querySelectorAll('path, text').forEach(el => el.remove());
+		const ns = 'http://www.w3.org/2000/svg';
+		const t = document.createElementNS(ns, 'text');
+		t.setAttribute('x', '150');
+		t.setAttribute('y', '35');
+		t.setAttribute('text-anchor', 'middle');
+		t.setAttribute('fill', '#999');
+		t.setAttribute('font-size', '12');
+		t.textContent = 'Collecting data…';
+		svg.appendChild(t);
+		return;
+	}
+
+    const W = 300, H = 60, PAD = 4;
+    const xs = points.map(p => p.t);
+    const ys = points.map(p => p.p);
+    const minT = Math.min(...xs), maxT = Math.max(...xs);
+    const minP = Math.min(...ys), maxP = Math.max(...ys);
+    const spanT = (maxT - minT) || 1;
+    const spanP = (maxP - minP) || 1;
+
+    // Map to SVG coords
+    const mapX = t => PAD + ((t - minT) / spanT) * (W - PAD * 2);
+    const mapY = p => H - PAD - ((p - minP) / spanP) * (H - PAD * 2);
+
+    const d = points.map((p, i) => `${i ? 'L' : 'M'}${mapX(p.t).toFixed(1)},${mapY(p.p).toFixed(1)}`).join(' ');
+
+    // Area (close the path)
+    const first = points[0];
+    const last = points[points.length - 1];
+    const areaD = `${d} L${mapX(last.t).toFixed(1)},${H - PAD} L${mapX(first.t).toFixed(1)},${H - PAD} Z`;
+
+	// Remove only the previous paths and text, keep <defs>
+	svg.querySelectorAll('path, text').forEach(el => el.remove());
+	
+	// Append fresh paths/text
+	const ns = 'http://www.w3.org/2000/svg';
+	
+	const area = document.createElementNS(ns, 'path');
+	area.setAttribute('class', 'area');
+	area.setAttribute('d', areaD);
+	svg.appendChild(area);
+	
+	const line = document.createElementNS(ns, 'path');
+	line.setAttribute('class', 'line');
+	line.setAttribute('d', d);
+	svg.appendChild(line);
+	
+	const highText = document.createElementNS(ns, 'text');
+	highText.setAttribute('x', '6');
+	highText.setAttribute('y', '12');
+	highText.setAttribute('fill', '#666');
+	highText.setAttribute('font-size', '10');
+	highText.textContent = `15m high: $${maxP.toFixed(0)}`;
+	svg.appendChild(highText);
+	
+	const lowText = document.createElementNS(ns, 'text');
+	lowText.setAttribute('x', '6');
+	lowText.setAttribute('y', String(H - 4));
+	lowText.setAttribute('fill', '#666');
+	lowText.setAttribute('font-size', '10');
+	lowText.textContent = `15m low: $${minP.toFixed(0)}`;
+	svg.appendChild(lowText);
+}	
+
+	
+// ===== Adaptive polling: fast while locked, slow while idle =====
+let statsTimer = null;
+
+function scheduleNextPoll() {
+    clearTimeout(statsTimer);
+    let delay;
+    if (locked) {
+        delay = 5000;           // actively waiting for a result
+    } else if (lives <= 0) {
+        delay = 5 * 60 * 1000;  // no lives: poll every 5 min just to catch the daily reset
+    } else {
+        delay = 60000;          // idle with lives: once a minute
+    }
+    statsTimer = setTimeout(async () => {
+        await loadStats();
+        scheduleNextPoll();
+    }, delay);
+}
+
+async function refreshNow() {
+    await loadStats();
+    scheduleNextPoll();       // recalculate interval based on new state
+}
+
+// Kick off
+refreshNow();
+
+// UI ticker runs every second (local only, no server call)
+setInterval(updateButtons, 1000);
+	</script>
+</body>
+</html>
