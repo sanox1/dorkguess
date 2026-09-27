@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dorkguess</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 24px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(45deg, #f7971e, #ffd200);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .input-group {
+            margin: 20px 0;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #ddd;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s;
+            background: #f8f9fa;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 0.5px;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #f7971e;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(247, 151, 30, 0.1);
+        }
+
+        .input-group input.valid {
+            border-color: #28a745;
+            background: #f0fff0;
+        }
+
+        .input-group input.invalid {
+            border-color: #dc3545;
+            background: #fff0f0;
+        }
+
+        .address-helper {
+            font-size: 12px;
+            margin-top: 8px;
+            color: #666;
+            min-height: 20px;
+        }
+
+        .address-helper.valid {
+            color: #28a745;
+        }
+
+        .address-helper.invalid {
+            color: #dc3545;
+        }
+
+        .address-length {
+            font-size: 11px;
+            color: #999;
+            margin-top: 4px;
+        }
+
+        .chest-box {
+            margin: 30px 0;
+            cursor: pointer;
+            transition: transform 0.3s;
+            position: relative;
+        }
+
+        .chest-box:hover {
+            transform: scale(1.02);
+        }
+
+        .chest-box img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 16px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .chest-box .chest-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 60px;
+            opacity: 0;
+            transition: opacity 0.5s;
+            pointer-events: none;
+        }
+
+        .chest-box.opened .chest-overlay {
+            opacity: 1;
+        }
+
+        .btn-open {
+            background: linear-gradient(45deg, #f7971e, #ffd200);
+            border: none;
+            padding: 16px 48px;
+            font-size: 20px;
+            font-weight: 700;
+            border-radius: 50px;
+            color: #1a1a2e;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+			margin-bottom: 15px;
+
+        }
+
+        .btn-open:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(247, 151, 30, 0.4);
+        }
+
+        .btn-open:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .prize-display {
+            margin: 25px 0;
+            padding: 20px;
+            border-radius: 16px;
+            background: #f8f9fa;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: all 0.5s;
+        }
+
+        .prize-display.win {
+            background: #d4edda;
+            border: 2px solid #28a745;
+        }
+
+        .prize-display.lose {
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+        }
+
+        .prize-display .prize-emoji {
+            font-size: 40px;
+            margin-right: 15px;
+        }
+
+        .prize-display .prize-amount {
+            font-size: 28px;
+            font-weight: 700;
+            color: #28a745;
+        }
+ 
+        .rules {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            text-align: left;
+        }
+
+        .rules h3 {
+            color: #333;
+            margin-bottom: 12px;
+        }
+
+  
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            padding: 15px;
+            background: #e8f5e9;
+            border-radius: 12px;
+            font-size: 14px;
+        }
+
+        .stats div {
+            text-align: center;
+        }
+
+        .stats .number {
+            font-size: 22px;
+            font-weight: 700;
+            color: #2e7d32;
+        }
+
+        .free-badge {
+            display: inline-block;
+            background: #4CAF50;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+            }
+            h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Dorkguess BTC price</h1>
+        <p class="subtitle">Make a correct BTC price change prediction in 1 minute and increase your score! Score 5 points and 10 DORK will be sent to your wallet address!</p>
+         <!-- Chest -->
+        <div class="chest-box" id="chestBox">
+            <img src="btc.png" alt="guess" width="500" height="300">
+            <div class="chest-overlay" id="chestOverlay">🎁</div>
+        </div>
+        <!-- Wallet and password input -->
+        <div class="input-group">
+            <label>💰 Wallet Address</label>
+            <input type="text" id="walletAddress" placeholder="Enter your Dorkcoin address (e.g., D...)" maxlength="34">
+            <div class="address-helper" id="addressHelper">🔑 Enter a valid Dorkcoin address (exactly 34 characters, starts with "D")</div>
+            <div class="address-length" id="addressLength">Length: 0 / 34 characters</div>
+        </div>
+        <div class="input-group">
+            <label>Password</label>
+			<input type="password" id="password" placeholder="Enter your password">
+        </div>
+		
+ 
+
+        <!-- Open Button -->
+		<button class="btn-open" id="loginBtn" onclick="login()">LOGIN</button>
+		<button class="btn-open" id="registerBtn" onclick="register()">SIGN UP</button>
+
+ 
+ 
+
+        <!-- Rules -->
+        <div class="rules">
+            <h3>🎯 Rules</h3>
+ 
+            <p style="margin-top: 12px; font-size: 13px; color: #666; text-align: center;">
+                • 10 Lives per day • Lives reset at 12:00 UTC • Register with your DORK wallet and a password and click sign up. • Lock duration is 1 minute • BTC price updates every minute • Entry price recorded when up or down button is pressed  • Free to play!
+            </p>
+        </div>
+            
+        <!-- banner -->
+        <div class="chest-box" id="adBox">
+			<iframe src="https://zerads.com/ad/ad.php?width=300&ref=blabla" marginwidth="0" marginheight="0" width="300" height="250" scrolling="no" border="0" frameborder="0"></iframe>        
+		</div>
+            
+    </div>
+
+    <script>
+        // ===== CONFIGURATION =====
+        const API_URL = 'http://YOUR_IP:5502';
+        
+        let currentAddress = '';
+        let canPlay = false;
+        let isValidAddress = false;
+
+        // ===== Validate Dorkcoin Address (Frontend) - EXACTLY 34 characters =====
+        function validateDorkcoinAddress(address) {
+            if (!address || typeof address !== 'string') return false;
+            address = address.trim();
+            
+            // Must be exactly 34 characters
+            if (address.length !== 34) return false;
+            
+            // Must start with 'D'
+            if (!address.startsWith('D')) return false;
+            
+            // Check if it contains only alphanumeric characters
+            const validChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            for (let i = 0; i < address.length; i++) {
+                if (!validChars.includes(address[i])) {
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+
+
+
+
+        // ===== Address input handler =====
+        document.getElementById('walletAddress').addEventListener('input', function() {
+            // Remove any whitespace
+            this.value = this.value.replace(/\s/g, '');
+            
+            currentAddress = this.value.trim();
+            const helper = document.getElementById('addressHelper');
+            const lengthDisplay = document.getElementById('addressLength');
+            const input = this;
+            
+            // Update character count
+            lengthDisplay.textContent = `Length: ${currentAddress.length} / 34 characters`;
+            
+            if (currentAddress.length === 0) {
+                helper.textContent = '🔑 Enter a valid Dorkcoin address (exactly 34 characters, starts with "D")';
+                helper.className = 'address-helper';
+                input.className = '';
+                isValidAddress = false;
+ 
+                 return;
+            }
+            
+            // Check if address is complete (34 chars)
+            if (currentAddress.length === 34) {
+                // Validate format
+                if (validateDorkcoinAddress(currentAddress)) {
+                    helper.textContent = '✅ Valid Dorkcoin address format';
+                    helper.className = 'address-helper valid';
+                    input.className = 'valid';
+                    isValidAddress = true;
+                 } else {
+                    helper.textContent = '❌ Invalid Dorkcoin address. Must start with "D" and contain only alphanumeric characters.';
+                    helper.className = 'address-helper invalid';
+                    input.className = 'invalid';
+                    isValidAddress = false;
+ 
+                 }
+            } else {
+                // Address is incomplete
+                helper.textContent = `⏳ Enter exactly 34 characters (${currentAddress.length}/34)`;
+                helper.className = 'address-helper';
+                input.className = '';
+                isValidAddress = false;
+ 
+             }
+        });
+
+async function register() {
+    const username = document.getElementById('walletAddress').value.trim();
+    const password = document.getElementById('password').value;
+    
+    if (!validateDorkcoinAddress(username)) {
+        alert('Invalid Dorkcoin address');
+        return;
+    }
+    
+    const response = await fetch(`${API_URL}/api/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+    });
+    const data = await response.json();
+    if (data.success) {
+        alert('Registration successful! Please login now.');
+    } else {
+        alert('Error: ' + data.error);
+    }
+}
+
+async function login() {
+    const username = document.getElementById('walletAddress').value.trim();
+    const password = document.getElementById('password').value;
+    
+    const response = await fetch(`${API_URL}/api/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+    });
+    const data = await response.json();
+    if (data.success) {
+        // Store session
+        localStorage.setItem('dork_user', username);
+        localStorage.setItem('dork_token', data.token);
+        window.location.href = 'index.html';
+    } else {
+        alert('Login failed: ' + data.error);
+    }
+}
+ 
+    </script>
+</body>
+</html>
