@@ -8,7 +8,7 @@ How to deploy:
 - In DORKCORE WALLET you need to open : %APPDATA%\Dorkcoin\dorkcoin.conf and add these lines: server=1 rpcport=22555 rpcuser=your_user rpcpassword=Your_pass
 - In NODE.JS you need AXIOS, EXPRESS, CORS etc. installed, e.g. run npm install axios
 - Replace RPC_USER and RPC_PASS with your own into the backend js file
-- Replace Token secret .createHmac('sha256', 'CHANGE_THIS')
+- Replace password Token secret 'your_dorkguess_secret' with your own
 - You can now run your backend script server.js with NODE.JS - node server.js
 - You need to open port 5502 (or any free port if 5502 is busy) in your router where the backend is, so your server is available outside.
 - If you are running multiple backends that use the same DORKCOIN wallet, make sure they use different ports.
