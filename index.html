@@ -165,7 +165,23 @@
             opacity: 0.5;
             cursor: not-allowed;
         }
-
+		
+		/* UP / DOWN button colours */
+		#upBtn {
+			background: linear-gradient(45deg, #28a745, #4caf50);
+			color: #fff;
+		}
+		#openBtn {
+			background: linear-gradient(45deg, #dc3545, #e74c3c);
+			color: #fff;
+		}
+		#upBtn:hover:not(:disabled) {
+			box-shadow: 0 8px 25px rgba(40, 167, 69, 0.5);
+		}
+		#openBtn:hover:not(:disabled) {
+			box-shadow: 0 8px 25px rgba(220, 53, 69, 0.5);
+		}
+		
         .prize-display {
             margin: 25px 0;
             padding: 20px;
@@ -477,6 +493,8 @@
 				downBtn.disabled = true;
 				document.getElementById('status').textContent = `⏳ Locked for ${secsLeft}s`;
 				document.getElementById('status').className = 'status-text warning';
+				document.title = `(${secsLeft}) Dorkguess`;   // ← NEW
+	
 			} else {
 				if (locked) {
 					// Lock just expired locally — ask the server for the result now
@@ -490,11 +508,15 @@
 					downBtn.disabled = true;
 					document.getElementById('status').textContent = '❌ No lives left today. Come back after 12:00 UTC.';
 					document.getElementById('status').className = 'status-text error';
+					document.title = 'Dorkguess';                // ← NEW: reset
+
 				} else {
 					upBtn.disabled = false;
 					downBtn.disabled = false;
 					document.getElementById('status').textContent = '✅ Ready to predict!';
 					document.getElementById('status').className = 'status-text success';
+					document.title = 'Dorkguess';                // ← NEW: reset
+
 				}
 			}
 		}
